@@ -56,8 +56,8 @@ function CMMenuItem.showModalDialog(photo)
     function(context)
         -- [[ prepare viewFactories ]]
         local f     = LrView.osFactory()
-        local prop  = LrBinding.makePropertyTable ( context )
-        prop.checkbox_state = false
+        local props = LrBinding.makePropertyTable ( context )
+        props.isChecked = false
 
         -- [[ prepare thumbnail ]]
         local thumbView
@@ -72,6 +72,7 @@ function CMMenuItem.showModalDialog(photo)
 
         -- [[ prepare view contents ]]
         local c = f:column {
+            bind_to_object = props,
             f:row {
                 f:static_text {
                     title = LOC "$$$/GeoMoves/CMMenuItem/ConflictOccurredMessage=This item already has a GPS info. Overwrite it?",
@@ -81,7 +82,7 @@ function CMMenuItem.showModalDialog(photo)
                 thumbView,
                 f:checkbox {
                     title = LOC "$$$/GeoMoves/CMMenuItem/ApplyToAll=Apply To All",
-                    value = bind 'checkbox_state',
+                    value = bind 'isChecked',
                 }
             }
         }
@@ -95,7 +96,7 @@ function CMMenuItem.showModalDialog(photo)
             otherVerb  = LOC "$$$/GeoMoves/CMMenuItem/OtherVerb=Abort",
         }
 
-        if bind 'checkbox_state' == true then
+        if props.isChecked == true then
             if verb == 'ok' then
                 CMMenuItem.defaultSolution = solution.OVERWRITE
             elseif verb == 'cancel' then
