@@ -1,0 +1,5 @@
+"$$$/GeoMoves/PluginName=GeoMoves"
+"$$$/GeoMoves/MenuItems/AddGeotags=Movesの行動記録を利用してジオタグを追加"
+"$$$/GeoMoves/PluginManager/Title=プラグインの設定"
+"$$$/GeoMoves/PluginManager/NeedSignin=プラグインを利用するにはMovesにログインしてください"
+"$$$/GeoMoves/PluginManager/ButtonTitle=Movesに接続",
