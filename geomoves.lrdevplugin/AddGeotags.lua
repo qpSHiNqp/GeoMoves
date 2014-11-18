@@ -1,9 +1,10 @@
-local LrApplication = import 'LrApplication'
-local LrBinding     = import 'LrBinding'
-local LrView        = import 'LrView'
-local LrDialogs     = import 'LrDialogs'
-local LrLogger      = import 'LrLogger'
-local catalog       = LrApplication.activeCatalog()
+local LrApplication     = import 'LrApplication'
+local LrFunctionContext = import 'LrFunctionContext'
+local LrBinding         = import 'LrBinding'
+local LrView            = import 'LrView'
+local LrDialogs         = import 'LrDialogs'
+local LrLogger          = import 'LrLogger'
+local catalog           = LrApplication.activeCatalog()
 
 CMMenuItem = {}
 
@@ -17,24 +18,28 @@ CMMenuItem.defaultAction = ACTION_TYPE.NONE
 function CMMenuItem.scanAndUpdateGPS ()
     local catPhotos = catalog:getTargetPhotos()
     local logger = LrLogger('GeoMoves:GPSUpdater')
+    logger:enable("logfile")
     local action = ACTION_TYPE.NONE
 
     logger:trace("=== start to scan ===")
     for _, photo in ipairs( catPhotos ) do
-        logger:enable("logfile")
+        logger:trace("processing: " .. photo:getRawMetadata('path'))
+
         local dateTime = photo:getRawMetadata('dateTime')
         if (dateTime == nil) then
             dateTime = photo:getRawMetadata('dateTimeOriginal')
         end
+        logger:trace("\tdatetime: " .. dateTime)
+
         local gps      = photo:getRawMetadata('gps')
-        logger:trace("processing:\t" .. photo:getRawMetadata('path'))
-        logger:trace("\tdatetime:\t" .. dateTime)
-        logger:trace("\tgps:\t" .. ((gps ~= nil) and gps or "(blank)"))
 
         if (dateTime ~= nil) then -- dateTime acquired
             if (gps ~= nil) then -- this photo already has a gps metainfo.
-                action = CMMenuItem.defaultSolution -- use default action
-                if (action == solution.NONE) then
+                logger:trace("\tGPS latitude  = " .. gps.latitude)
+                logger:trace("\tGPS longitude = " .. gps.longitude)
+
+                action = CMMenuItem.defaultAction -- use default action
+                if (action == ACTION_TYPE.NONE or action == nil) then
                     action = CMMenuItem.showModalDialog(photo) -- confirm to overwrite
                 end
             else
@@ -45,6 +50,9 @@ function CMMenuItem.scanAndUpdateGPS ()
                 -- TODO acquire GPS info from Moves and set it to photo
                 logger:trace("\twriting gps info")
                 -- photo.setRawMetadata('gps', gps)
+            elseif (action == ACTION_TYPE.ABORT) then
+                -- aborting
+                return
             end
         end
     end
@@ -60,17 +68,6 @@ function CMMenuItem.showModalDialog(photo)
         local props = LrBinding.makePropertyTable ( context )
         props.isChecked = false
 
-        -- [[ prepare thumbnail ]]
-        local thumbView
-        local thumb, err = cat:getPreview( photo, nil, nil, 4 )
-        if thumb then
-            thumbView = f:picture {
-                value = thumb
-            }
-        else
-            thumbView = {}
-        end
-
         -- [[ prepare view contents ]]
         local c = f:column {
             bind_to_object = props,
@@ -80,10 +77,14 @@ function CMMenuItem.showModalDialog(photo)
                 }
             },
             f:row {
-                thumbView,
+                spacing = f:control_spacing(),
+                f:picture {
+                    value = photo:getRawMetadata('path')
+                },
                 f:checkbox {
-                    title = LOC "$$$/GeoMoves/CMMenuItem/ApplyToAll=Apply To All",
-                    value = bind 'isChecked',
+                    title     = LOC "$$$/GeoMoves/CMMenuItem/ApplyToAll=Apply To All",
+                    value     = bind 'isChecked',
+                    alignment = "right",
                 }
             }
         }
@@ -99,9 +100,9 @@ function CMMenuItem.showModalDialog(photo)
 
         if props.isChecked == true then
             if verb == 'ok' then
-                CMMenuItem.defaultSolution = solution.OVERWRITE
+                CMMenuItem.defaultAction = ACTION_TYPE.OVERWRITE
             elseif verb == 'cancel' then
-                CMMenuItem.defaultSolution = solution.SKIP
+                CMMenuItem.defaultAction = ACTION_TYPE.SKIP
             end
         end
         return verb
