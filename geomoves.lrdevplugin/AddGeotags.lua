@@ -15,21 +15,21 @@ ACTION_TYPE.ABORT     = "other"
 CMMenuItem.defaultAction = ACTION_TYPE.NONE
 
 function CMMenuItem.scanAndUpdateGPS ()
-    local catPhotos = catalog.getTargetPhotos()
-    local myLogger = LrLogger('GeoMoves:GPSUpdater')
+    local catPhotos = catalog:getTargetPhotos()
+    local logger = LrLogger('GeoMoves:GPSUpdater')
     local action = ACTION_TYPE.NONE
 
+    logger:trace("=== start to scan ===")
     for _, photo in ipairs( catPhotos ) do
-        myLogger:enable("logfile")
+        logger:enable("logfile")
         local dateTime = photo:getRawMetadata('dateTime')
         if (dateTime == nil) then
             dateTime = photo:getRawMetadata('dateTimeOriginal')
         end
         local gps      = photo:getRawMetadata('gps')
-        myLogger:trace("====================\n")
-        myLogger:trace(photo:getRawMetadata('path') .. "\n")
-        myLogger:trace(dateTime .. "\n")
-        myLogger:trace(gps .. "\n")
+        logger:trace("processing:\t" .. photo:getRawMetadata('path'))
+        logger:trace("\tdatetime:\t" .. dateTime)
+        logger:trace("\tgps:\t" .. ((gps ~= nil) and gps or "(blank)"))
 
         if (dateTime ~= nil) then -- dateTime acquired
             if (gps ~= nil) then -- this photo already has a gps metainfo.
@@ -43,7 +43,8 @@ function CMMenuItem.scanAndUpdateGPS ()
 
             if (action == ACTION_TYPE.OVERWRITE) then
                 -- TODO acquire GPS info from Moves and set it to photo
-                photo.setRawMetadata('gps', gps)
+                logger:trace("\twriting gps info")
+                -- photo.setRawMetadata('gps', gps)
             end
         end
     end
