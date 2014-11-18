@@ -1,5 +1,11 @@
 "$$$/GeoMoves/PluginName=GeoMoves"
-"$$$/GeoMoves/MenuItems/AddGeotags=Movesの行動記録を利用してジオタグを追加"
+"$$$/GeoMoves/MenuItems/AddGeotags=選択中の写真にMovesからジオタグを追加（一括処理）"
 "$$$/GeoMoves/PluginManager/Title=プラグインの設定"
 "$$$/GeoMoves/PluginManager/NeedSignin=プラグインを利用するにはMovesにログインしてください"
 "$$$/GeoMoves/PluginManager/ButtonTitle=Movesに接続",
+"$$$/GeoMoves/CMMenuItem/ConflictOccurredMessage=この写真には既にGPS情報が付加されています。上書きしますか?",
+"$$$/GeoMoves/CMMenuItem/ApplyToAll=今後も同様に処理する",
+"$$$/GeoMoves/CMMenuItem/ConflictOccurredTitle=GPS情報の競合",
+"$$$/GeoMoves/CMMenuItem/ActionVerb=上書き",
+"$$$/GeoMoves/CMMenuItem/CancelVerb=スキップ",
+"$$$/GeoMoves/CMMenuItem/OtherVerb=中止",

@@ -26,7 +26,7 @@ return {
 
     LrLibraryMenuItems = {
         {
-            title = LOC "$$$/GeoMoves/MenuItems/AddGeotags=Add Geotags using Moves Trace",
+            title = LOC "$$$/GeoMoves/MenuItems/AddGeotags=Geotag to selected photo(s) using Moves Trace",
             file = "AddGeotags.lua",
             enabledWhen = "photosAvailable",
         },
