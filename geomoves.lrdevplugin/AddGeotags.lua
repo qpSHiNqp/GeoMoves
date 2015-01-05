@@ -48,8 +48,12 @@ function CMMenuItem.scanAndUpdateGPS ()
 
             if (action == ACTION_TYPE.OVERWRITE) then
                 -- TODO acquire GPS info from Moves and set it to photo
+                -- lat, lng = MovesAdapter.getLatLng(dateTime)
                 logger:trace("\twriting gps info")
-                -- photo.setRawMetadata('gps', gps)
+                -- photo.setRawMetadata('gps', {
+                --     latitude  = lat,
+                --     longitude = lng,
+                -- })
             elseif (action == ACTION_TYPE.ABORT) then
                 -- aborting
                 return
@@ -69,6 +73,7 @@ function CMMenuItem.showModalDialog(photo)
         props.isChecked = false
 
         -- [[ prepare view contents ]]
+        -- TODO: Layouting
         local c = f:column {
             bind_to_object = props,
             f:row {
